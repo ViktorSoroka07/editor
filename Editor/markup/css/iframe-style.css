@@ -1,0 +1,162 @@
+/* fonts*/
+@font-face {
+  font-family: 'PTSans-Narrow';
+  src: url('../fonts/PTSans-Narrow_latin+latin-ext_gdi.eot');
+  src: url('../fonts/PTSans-Narrow_latin+latin-ext_gdi.eot?#iefix') format('embedded-opentype'), url('../fonts/PTSans-Narrow_latin+latin-ext_gdi.woff') format('woff'), url('../fonts/PTSans-Narrow_latin+latin-ext_gdi.ttf') format('truetype'), url('../fonts/PTSans-Narrow_latin+latin-ext_gdi.otf') format('opentype'), url('../fonts/PTSans-Narrow_latin+latin-ext_gdi.svg#PTSans-Narrow') format('svg');
+  font-weight: 400;
+  font-style: normal;
+  font-stretch: condensed;
+  unicode-range: U+0020-F6D0;
+}
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+body {
+  font-family: 'PTSans-Narrow', Arial, sans-serif;
+  font-size: 18px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 2px solid rgba(50, 123, 255, 0.82);
+  border-radius: 3px;
+}
+body:hover {
+  border-color: red;
+}
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  -webkit-tab-size: 4;
+  tab-size: 4;
+}
+#edit {
+  display: block;
+  width: 100%;
+  min-height: 100%;
+  background: #D6DEE2;
+  white-space: normal;
+  box-sizing: border-box;
+  padding: 10px 5px;
+}
