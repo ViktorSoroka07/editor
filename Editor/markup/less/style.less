@@ -89,6 +89,7 @@
   -moz-transition:    @transition;
   -ms-transition:     @transition;
   -o-transition:      @transition;
+  transition:      @transition;
 }
 .transform(@string){
   -webkit-transform: @string;
@@ -119,6 +120,7 @@
   -moz-transform: 	 translate(@x, @y);
   -ms-transform: 		 translate(@x, @y);
   -o-transform: 		 translate(@x, @y);
+  transform: translate(@x, @y);
 }
 .translate3d (@x, @y: 0, @z: 0) {
   -webkit-transform:       translate3d(@x, @y, @z);
@@ -212,9 +214,7 @@ header{
 
 /*main block*/
 
-main {
-  margin-bottom: 20px;
-}
+main { margin-bottom: 20px; }
 
 .wrapper {
   .border-radius(10px);
@@ -225,6 +225,8 @@ main {
   .box-sizing();
   .inner-shadow (0, 0, 2px, 4px, 0.25);
 }
+
+b { font-weight: bold; }
 
 iframe {
   width: 100%;

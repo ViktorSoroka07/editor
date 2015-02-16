@@ -2855,7 +2855,7 @@
                 // performed on the current document's selection. See issue 109.
 
                 // Note also that if a selection previously existed, it is wiped by these tests. This should usually be fine
-                // because initialization usually happens when the document loads, but could be a problem for a script that
+                // because initialization usually happens when the document loads, but could be a problem for a js that
                 // loads and initializes Rangy later. If anyone complains, code could be added to save and restore the
                 // selection.
                 var sel = window.getSelection();
@@ -3761,6 +3761,5 @@
             addListener(window, "load", loadHandler);
         }
     }
-
     return api;
 }, this);

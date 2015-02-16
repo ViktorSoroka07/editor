@@ -422,7 +422,7 @@
         var getPreviousMergeableTextNode = createAdjacentMergeableTextNodeGetter(false),
             getNextMergeableTextNode = createAdjacentMergeableTextNodeGetter(true);
 
-    
+
         function Merge(firstNode) {
             this.isElementMerge = (firstNode.nodeType == 1);
             this.textNodes = [];
@@ -955,7 +955,6 @@
             undoToRanges: function(ranges) {
                 // Get ranges returned in document order
                 var i = ranges.length;
-
                 while (i--) {
                     this.undoToRange(ranges[i], ranges);
                 }
@@ -1057,6 +1056,5 @@
         api.CssClassApplier = api.ClassApplier = ClassApplier;
         api.createCssClassApplier = api.createClassApplier = createClassApplier;
     });
-    
     return rangy;
 }, this);
