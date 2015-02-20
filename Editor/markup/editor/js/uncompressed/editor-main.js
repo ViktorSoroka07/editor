@@ -21,11 +21,7 @@
             }).appendTo($(frame_content).find('head'));
 
             $('<script>', {
-                src: 'editor/js/rangy-core.js'
-            }).appendTo($(frame_content).find('head'));
-
-            $('<script>', {
-                src: 'editor/js/rangy-classapplier.js'
+                src: 'editor/js/uncompressed/libs/lib.min.js'
             }).appendTo($(frame_content).find('head'));
 
 
@@ -135,7 +131,6 @@
                 new ApplierStyle('toggleItalic', 'ita', 'i').attachEvents();
                 new ApplierStyle('toggleDelete', 'del', 'del').attachEvents();
             }
-
             $('.preview').on('click', function () {
                 createFrames();
             });
