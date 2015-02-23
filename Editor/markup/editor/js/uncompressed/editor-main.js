@@ -1,140 +1,179 @@
 (function ($) {
     'use strict';
-    var frame,
-        createFrames;
+
     $.fn.editorCustom = function (options) {
+        var instance;
 
-        frame = $('<iframe>', {
-            id: "editor",
-            text: "Your browser does`t support iframes"
-        }).appendTo(this);
+        return function () {
+            var frame,
+                createFrames,
+                createElement;
 
-        setTimeout(function () {
-            var frame_content = (frame[0].contentDocument) ? frame[0].contentDocument :
-                    (frame[0].contentDocument ? frame[0].contentWindow.document : frame[0].document),
-                frame_window = frame[0].contentWindow || frame[0].contentDocument.defaultView,
-                fragment = frame_content.createDocumentFragment();
+            if (instance) {
+                throw Error('There is can be only one instance of editor');
+            }
+            instance = this;
 
-            $('<link>', {
-                rel: 'stylesheet',
-                href: 'editor/css/iframe-style.min.css?t=<?= time(); ?>"'
-            }).appendTo($(frame_content).find('head'));
+            createElement = function (tagName, attributes) {
+                var elem = $('<' + tagName + '>');
 
-            $('<script>', {
-                src: 'editor/js/uncompressed/libs/lib.min.js'
-            }).appendTo($(frame_content).find('head'));
-
-
-            $('<input>', {type: 'button', id: 'toggleBold', value: 'B'}).appendTo(fragment);
-            $('<input>', {type: 'button', id: 'toggleUnderline', value: 'U'}).appendTo(fragment);
-            $('<input>', {type: 'button', id: 'toggleItalic', value: 'I'}).appendTo(fragment);
-            $('<input>', {type: 'button', id: 'toggleDelete', value: 'Del'}).appendTo(fragment);
-            frame_content.body.appendChild(fragment);
-
-            $('<div>', {
-                contenteditable: 'true',
-                id: 'edit'
-            }).appendTo($(frame_content).find('body'));
-
-            createFrames = function () {
-                var params = [
-                        'height=' + screen.height,
-                        'width=' + screen.width,
-                        'top=0',
-                        'left=0',
-                        'resizable=yes',
-                        'scrollbars=yes',
-                        'toolbar=yes',
-                        'menubar=yes',
-                        'location=yes'
-                    ].join(','),
-                    newWin = window.open('', 'myEditor', params);
-                $(newWin.document.body).ready(function () {
-                    var txt = $(frame_content).find('#edit').html();
-                    newWin.document.write('<html>' +
-                        '<head>' +
-                        '<title>Preview</title>' +
-                        '<link rel="stylesheet" type="text/css" href="editor/css/preview.min.css?t=<?= time(); ?>">' +
-                        '</head>' +
-                        '<body>');
-                    $(newWin.document.body).html(txt);
-                    newWin.document.write('</body></html>');
-                });
-                newWin.document.close();
-                if (window.focus) {
-                    newWin.focus();
+                if (typeof attributes !== 'object') {
+                    throw Error('*' + attributes * +'* must be an object');
                 }
-                return false;
+
+                for (var prop in attributes) {
+                    if (attributes.hasOwnProperty(prop)) {
+                        elem.attr(prop, attributes[prop]);
+                    }
+                }
+                return elem;
             };
 
-            function gEBI(id) {
-                return frame_content.getElementById(id);
-            }
+            frame = createElement('iframe', {
+                id: "editor",
+                text: "Your browser does`t support iframes"
+            }).appendTo(this);
 
-            /**
-             * create class for edit text buttons
-             * @param id_btn {string} - id of button
-             * @param class_name {string} - class for wrap element
-             * @param tag_name {string} - wrap element
-             * @constructor
-             */
-            function ApplierStyle(id_btn, class_name, tag_name) {
-                this.applier = rangy.createClassApplier(class_name, {
-                    elementTagName: tag_name,
-                    ignoreWhiteSpace: false
-                });
-                this.btn = gEBI(id_btn);
-            }
+            setTimeout(function () {
+                var frame_content = (frame[0].contentDocument) ? frame[0].contentDocument :
+                        (frame[0].contentDocument ? frame[0].contentWindow.document : frame[0].document),
+                    frame_window = frame[0].contentWindow || frame[0].contentDocument.defaultView,
+                    fragment = frame_content.createDocumentFragment(),
+                    frame_head = $(frame_content).find('head'),
+                    frame_body = $(frame_content).find('body'),
+                    editor_wrap,
+                    editor_wrap_html,
+                    gEBI;
 
-            ApplierStyle.prototype = {
-                toggleStyle: function () {
-                    this.applier.toggleSelection(frame_window);
-                },
-                attachEvents: function () {
-                    var self = this;
 
-                    $(frame_content).on('empty', function () {
-                        //console.log(rangy.getSelection(frame_window));
-                        if ($(gEBI('edit')).html() === '' || /^((<(b|i|del|u)\sclass=".{1,4}"><br><\/\3>)|<br>)$/.test(($(gEBI('edit')).html()))) {
-                            $(gEBI('edit')).empty();
-                            self.applier.undoToSelection(frame_window);
-                        }
+                gEBI = function (id) {
+                    return frame_content.getElementById(id);
+                };
+
+                createElement('link', {
+                    rel: 'stylesheet',
+                    href: 'editor/css/iframe-style.min.css?t=<?= time(); ?>"'
+                }).appendTo(frame_head);
+
+                createElement('script', {
+                    src: 'editor/js/uncompressed/libs/lib.min.js'
+                }).appendTo(frame_head);
+
+                createElement('input', {type: 'button', id: 'toggleBold', value: 'B'}).appendTo(fragment);
+                createElement('input', {type: 'button', id: 'toggleUnderline', value: 'U'}).appendTo(fragment);
+                createElement('input', {type: 'button', id: 'toggleItalic', value: 'I'}).appendTo(fragment);
+                createElement('input', {type: 'button', id: 'toggleDelete', value: 'Del'}).appendTo(fragment);
+
+                frame_body.append(fragment);
+
+                createElement('div', {
+                    contenteditable: 'true',
+                    id: 'edit'
+                }).appendTo(frame_body);
+
+                editor_wrap = $(gEBI('edit'));
+                editor_wrap_html = editor_wrap.html();
+
+                createFrames = function () {
+                    var params = [
+                            'height=' + screen.height,
+                            'width=' + screen.width,
+                            'top=0',
+                            'left=0',
+                            'resizable=yes',
+                            'scrollbars=yes',
+                            'toolbar=yes',
+                            'menubar=yes',
+                            'location=yes'
+                        ].join(','),
+                        newWin = window.open('', 'myEditor', params);
+                    $(newWin.document.body).ready(function () {
+                        var txt = editor_wrap_html;
+                        newWin.document.write(
+                            '<html>' +
+                            '<head>' +
+                            '<title>Preview</title>' +
+                            '<link rel="stylesheet" type="text/css" href="editor/css/preview.min.css?t=<?= time(); ?>">' +
+                            '</head>' +
+                            '<body>');
+                        $(newWin.document.body).html(txt);
+                        newWin.document.write('' +
+                        '</body>' +
+                        '</html>');
                     });
+                    newWin.document.close();
+                    if (window.focus) {
+                        newWin.focus();
+                    }
+                    return false;
+                };
 
-                    $(frame_content).on('keyup', function KeyCheck(e) {
-                        var key = e.which || e.keyCode || e.charCode;
-                        if (/^(<(strong|strike|em|ins|u)(.+)?>.+<\/\2>)$/.test(($(gEBI('edit')).html()))) {
-                            $(gEBI('edit')).html($(gEBI('edit')).text());
-                        }
-
-                        if (key === 8 || key === 46) {
-                            $.trim($(gEBI('edit')).html());
-                            $(frame_content).trigger('empty');
-                        }
+                /**
+                 * create class for edit text buttons
+                 * @param id_btn {string} - id of button
+                 * @param class_name {string} - class for wrap element
+                 * @param tag_name {string} - wrap element
+                 * @constructor
+                 */
+                function ApplierStyle(id_btn, class_name, tag_name) {
+                    this.applier = rangy.createClassApplier(class_name, {
+                        elementTagName: tag_name,
+                        ignoreWhiteSpace: false
                     });
-
-                    this.btn.ontouchstart = this.btn.onmousedown = function () {
-                        this.toggleStyle();
-                    }.bind(this);
+                    this.btn = gEBI(id_btn);
                 }
-            };
 
-            rangy.init();
-            // Enable buttons
-            var classApplierModule = rangy.modules.ClassApplier;
+                ApplierStyle.prototype = {
+                    toggleStyle: function () {
+                        this.applier.toggleSelection(frame_window);
+                    },
+                    attachEvents: function () {
+                        var self = this;
 
-            // Next line is pure paranoia: it will only return false if the browser has no support for ranges,
-            // selections or TextRanges. Even IE 5 would pass this test.
-            if (rangy.supported && classApplierModule && classApplierModule.supported) {
-                new ApplierStyle('toggleBold', 'bold', 'b').attachEvents();
-                new ApplierStyle('toggleUnderline', 'und', 'b').attachEvents();
-                new ApplierStyle('toggleItalic', 'ita', 'i').attachEvents();
-                new ApplierStyle('toggleDelete', 'del', 'del').attachEvents();
-            }
-            $('.preview').on('click', function () {
-                createFrames();
-            });
-            return this;
-        }, 100);
-    };
+                        $(frame_content).on('empty', function () {
+                            if (editor_wrap_html === '' || /^((<(b|i|del|u)\sclass=".{1,4}"><br><\/\3>)|<br>)$/.test(editor_wrap_html)) {
+                                editor_wrap.empty();
+                                self.applier.undoToSelection(frame_window);
+                            }
+                        });
+
+                        $(frame_content).on('keyup', function KeyCheck(e) {
+                            var key = e.which || e.keyCode || e.charCode;
+                            if (/^(<(strong|strike|em|ins|u)(.+)?>.+<\/\2>)$/.test(editor_wrap_html)) {
+                                editor_wrap.html(editor_wrap_html);
+                            }
+
+                            if (key === 8 || key === 46) {
+                                $.trim(editor_wrap_html);
+                                $(frame_content).trigger('empty');
+                            }
+                        });
+
+                        this.btn.ontouchstart = this.btn.onmousedown = function () {
+                            this.toggleStyle();
+                        }.bind(this);
+                    }
+                };
+
+                rangy.init();
+                // Enable buttons
+                var classApplierModule = rangy.modules.ClassApplier;
+
+                // Next line is pure paranoia: it will only return false if the browser has no support for ranges,
+                // selections or TextRanges. Even IE 5 would pass this test.
+                if (rangy.supported && classApplierModule && classApplierModule.supported) {
+                    new ApplierStyle('toggleBold', 'bold', 'b').attachEvents();
+                    new ApplierStyle('toggleUnderline', 'und', 'b').attachEvents();
+                    new ApplierStyle('toggleItalic', 'ita', 'i').attachEvents();
+                    new ApplierStyle('toggleDelete', 'del', 'del').attachEvents();
+                }
+
+                $('.preview').on('click', function () {
+                    createFrames();
+                });
+
+                return instance;
+            }, 100);
+        };
+    }();
 }(jQuery));
