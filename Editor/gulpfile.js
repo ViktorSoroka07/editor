@@ -14,7 +14,7 @@ var gulp = require('gulp'),
 
 gulp.task('connect', function () {
     connect.server({
-        root: './markup',
+        root: '../',
         port: 8000,
         livereload: true
     });
@@ -63,7 +63,7 @@ gulp.task('lessIframe', function () {
 
 gulp.task('url', function(){
     var options = {
-        url: 'http://localhost:8000',
+        url: 'http://localhost:8000/Editor/markup/',
         app: 'chrome'
     };
     gulp.src('./markup/index.html')
@@ -78,4 +78,4 @@ gulp.task('watch', function () {
     gulp.watch('./markup/editor/less/preview.less', ['lessPreview']);
 });
 
-gulp.task('default', ['lessIframe', 'lessPreview', 'libJs', 'editorJs', 'connect', 'url', 'watch']);
+gulp.task('default', ['lessPreview','lessIframe', 'libJs', 'editorJs', 'url', 'watch', 'connect']);

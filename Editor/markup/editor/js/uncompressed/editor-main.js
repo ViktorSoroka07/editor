@@ -1,9 +1,8 @@
 (function ($) {
     'use strict';
-
+    $.editorCustomdef = new jQuery.Deferred();
     $.fn.editorCustom = function (options) {
         var instance;
-
         return function () {
             var frame,
                 createFrames,
@@ -14,13 +13,15 @@
             }
             instance = this;
 
-            createElement = function (tagName, attributes) {
+            createElement = function (tagName, attributes, text) {
                 var elem = $('<' + tagName + '>');
 
                 if (typeof attributes !== 'object') {
                     throw Error('*' + attributes * +'* must be an object');
                 }
-
+                if (text != null) {
+                    $(elem).text(text);
+                }
                 for (var prop in attributes) {
                     if (attributes.hasOwnProperty(prop)) {
                         elem.attr(prop, attributes[prop]);
@@ -43,36 +44,51 @@
                     frame_body = $(frame_content).find('body'),
                     editor_wrap,
                     editor_wrap_html,
-                    gEBI;
+                    gEBI,
+                    anchor_div,
+                    link_input_div,
+                    anchor_wrap,
+                    preview;
 
 
                 gEBI = function (id) {
                     return frame_content.getElementById(id);
                 };
-
-                createElement('link', {
-                    rel: 'stylesheet',
-                    href: 'editor/css/iframe-style.min.css?t=<?= time(); ?>"'
+                createElement('link', {rel: 'stylesheet',
+                    href: window.location.origin + '/Editor/markup/editor/css/iframe-style.min.css?modified=20012009'
                 }).appendTo(frame_head);
+                createElement('script', {src: window.location.origin + '/Editor/markup/editor/js/uncompressed/libs/lib.min.js'}).appendTo(frame_head);
 
-                createElement('script', {
-                    src: 'editor/js/uncompressed/libs/lib.min.js'
-                }).appendTo(frame_head);
+                createElement('input', {type: 'button', id: 'toggleBold', value: 'b'}).appendTo(fragment);
+                createElement('input', {type: 'button', id: 'toggleUnderline', value: 'u'}).appendTo(fragment);
+                createElement('input', {type: 'button', id: 'toggleItalic', value: 'i'}).appendTo(fragment);
+                createElement('input', {type: 'button', id: 'toggleDelete', value: 'del'}).appendTo(fragment);
 
-                createElement('input', {type: 'button', id: 'toggleBold', value: 'B'}).appendTo(fragment);
-                createElement('input', {type: 'button', id: 'toggleUnderline', value: 'U'}).appendTo(fragment);
-                createElement('input', {type: 'button', id: 'toggleItalic', value: 'I'}).appendTo(fragment);
-                createElement('input', {type: 'button', id: 'toggleDelete', value: 'Del'}).appendTo(fragment);
+                /**
+                 * @description - block with anchor button
+                 */
+                //anchor_wrap = createElement('div', {id: 'anchor-wrap'});
+                //anchor_div = createElement('div', {id: 'anchor'});
+                //createElement('input', {type: 'button', id: 'link', value: 'Create link from selected text'}).appendTo(anchor_div);
+                //anchor_div.appendTo(anchor_wrap);
+                //
+                //link_input_div = createElement('div', {id: 'linkInput' });
+                //createElement('input', {type: 'text', id: 'linkHref', value: 'http://www.example.com/'}).appendTo(link_input_div);
+                //createElement('input', {type: 'button', id: 'createLink', value: 'Create link'}).appendTo(link_input_div);
+                //link_input_div.appendTo(anchor_wrap);
+                //
+                //anchor_wrap.appendTo(fragment);
 
                 frame_body.append(fragment);
 
-                createElement('div', {
-                    contenteditable: 'true',
-                    id: 'edit'
-                }).appendTo(frame_body);
+                /**
+                 * @description - div with contenteditable field
+                 */
+                createElement('div', {contenteditable: 'true',id: 'edit'}).appendTo(frame_body);
+
+                createElement('button', {class: 'preview'}, 'preview').appendTo(frame_body);
 
                 editor_wrap = $(gEBI('edit'));
-                editor_wrap_html = editor_wrap.html();
 
                 createFrames = function () {
                     var params = [
@@ -88,15 +104,15 @@
                         ].join(','),
                         newWin = window.open('', 'myEditor', params);
                     $(newWin.document.body).ready(function () {
-                        var txt = editor_wrap_html;
+                        editor_wrap_html = editor_wrap.html();
                         newWin.document.write(
                             '<html>' +
                             '<head>' +
                             '<title>Preview</title>' +
-                            '<link rel="stylesheet" type="text/css" href="editor/css/preview.min.css?t=<?= time(); ?>">' +
+                            '<link rel="stylesheet" type="text/css" href="' + window.location.origin + '/Editor/markup/editor/css/preview.min.css?modified=20012009">' +
                             '</head>' +
                             '<body>');
-                        $(newWin.document.body).html(txt);
+                        $(newWin.document.body).html(editor_wrap_html);
                         newWin.document.write('' +
                         '</body>' +
                         '</html>');
@@ -131,9 +147,11 @@
                         var self = this;
 
                         $(frame_content).on('empty', function () {
+                            editor_wrap_html = editor_wrap.html();
                             if (editor_wrap_html === '' || /^((<(b|i|del|u)\sclass=".{1,4}"><br><\/\3>)|<br>)$/.test(editor_wrap_html)) {
                                 editor_wrap.empty();
                                 self.applier.undoToSelection(frame_window);
+
                             }
                         });
 
@@ -142,7 +160,6 @@
                             if (/^(<(strong|strike|em|ins|u)(.+)?>.+<\/\2>)$/.test(editor_wrap_html)) {
                                 editor_wrap.html(editor_wrap_html);
                             }
-
                             if (key === 8 || key === 46) {
                                 $.trim(editor_wrap_html);
                                 $(frame_content).trigger('empty');
@@ -162,16 +179,20 @@
                 // Next line is pure paranoia: it will only return false if the browser has no support for ranges,
                 // selections or TextRanges. Even IE 5 would pass this test.
                 if (rangy.supported && classApplierModule && classApplierModule.supported) {
-                    new ApplierStyle('toggleBold', 'bold', 'b').attachEvents();
-                    new ApplierStyle('toggleUnderline', 'und', 'b').attachEvents();
-                    new ApplierStyle('toggleItalic', 'ita', 'i').attachEvents();
-                    new ApplierStyle('toggleDelete', 'del', 'del').attachEvents();
+                    new ApplierStyle('toggleBold', 'custom-b', 'b').attachEvents();
+                    new ApplierStyle('toggleUnderline', 'custom-u', 'u').attachEvents();
+                    new ApplierStyle('toggleItalic', 'custom-i', 'i').attachEvents();
+                    new ApplierStyle('toggleDelete', 'custom-del', 'del').attachEvents();
                 }
 
-                $('.preview').on('click', function () {
+                //$(frame_content).find('#link').on('click', function () {
+                //    alert(rangy);
+                //});
+
+                $(frame_content).find('.preview').on('click', function () {
                     createFrames();
                 });
-
+                $.editorCustomdef.resolve();
                 return instance;
             }, 100);
         };
