@@ -1,0 +1,41 @@
+/*dependencies*/
+@import "compass/reset";
+@import "compass/css3";
+
+/* variables block*/
+$default-size: 5px;
+$default-color: #f00;
+
+/* fonts*/
+@include font-face ('PTSans-Narrow',
+        font-files('/markup/editot/fonts/PTSans-Narrow_latin+latin-ext_gdi.woff',
+                '/markup/editot/fonts/PTSans-Narrow_latin+latin-ext_gdi.otf',
+                '/markup/editot/fonts/PTSans-Narrow_latin+latin-ext_gdi.ttf',
+                '/markup/editot/fonts/PTSans-Narrow_latin+latin-ext_gdi.svg'),
+        '/markup/editot/fonts/PTSans-Narrow_latin+latin-ext_gdi.eot',
+        bold,
+        normal
+);
+
+html {
+  height: 100%;
+}
+
+body {
+  font-family: 'PTSans-Narrow', Arial, sans-serif;
+  width: 1000px;
+  margin: 0 auto;
+  padding: $default-size*2;
+  min-height: 100%;
+  @include box-sizing();
+  @include box-shadow(inset 0 0 3px 5px rgba(0, 0, 0, 0.25));
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.und{
+  text-decoration: underline;
+  color: $default-color;
+}

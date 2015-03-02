@@ -1,16 +1,14 @@
 var gulp = require('gulp'),
     minify = require('gulp-minify-css'),
     concat = require('gulp-concat'),
-    less = require('gulp-less'),
     rename = require('gulp-rename'),
-    comments = require('path'),
     path = require('path'),
     notify = require('gulp-notify'),
     connect = require('gulp-connect'),
     open = require('gulp-open'),
-    jshint = require('gulp-jshint'),
     removeLogs = require('gulp-removelogs'),
-    uglify = require('gulp-uglify');
+    uglify = require('gulp-uglify'),
+    compass = require('gulp-compass');
 
 gulp.task('connect', function () {
     connect.server({
@@ -18,6 +16,54 @@ gulp.task('connect', function () {
         port: 8000,
         livereload: true
     });
+});
+
+gulp.task('watch', function () {
+    gulp.watch(['./markup/index.html'], ['html']);
+    gulp.watch(['./markup/editor/js/uncompressed/libs/uncompressed/*.js'], ['libJs']);
+    gulp.watch(['./markup/editor/js/uncompressed/editor-main.js'], ['editorJs']);
+    gulp.watch(['./markup/editor/scss/iframe-style.scss'], ['scssIframe','html']);
+    gulp.watch(['./markup/editor/scss/preview.scss'], ['scssPreview']);
+});
+
+gulp.task('html',['scssIframe'], function () {
+    return gulp.src('./markup/index.html')
+        .pipe(connect.reload());
+});
+
+gulp.task('scssPreview', function () {
+    gulp.src('./markup/editor/scss/preview.scss')
+        .pipe(compass({
+            project: path.join(__dirname, './markup/editor/'),
+            css: 'css',
+            sass: 'scss'
+        }))
+        .pipe(minify())
+        .pipe(rename({suffix: ".min"}))
+        .pipe(gulp.dest('./markup/editor/css/'))
+        .pipe(connect.reload());
+});
+
+gulp.task('scssIframe', function () {
+    return gulp.src('./markup/editor/scss/iframe-style.scss')
+        .pipe(compass({
+            project: path.join(__dirname, './markup/editor/'),
+            css: 'css',
+            sass: 'scss'
+        }))
+        .pipe(minify())
+        .pipe(rename({suffix: ".min"}))
+        .pipe(gulp.dest('./markup/editor/css/'))
+        .pipe(connect.reload());
+});
+
+gulp.task('url', function(){
+    var options = {
+        url: 'http://localhost:8000/Editor/markup/',
+        app: 'chrome'
+    };
+    gulp.src('./markup/index.html')
+        .pipe(open('', options));
 });
 
 gulp.task('libJs', function () {
@@ -38,44 +84,4 @@ gulp.task('editorJs', function () {
         .pipe(connect.reload());
 });
 
-gulp.task('html', function () {
-    return gulp.src('./markup/index.html')
-        .pipe(connect.reload());
-});
-
-gulp.task('lessPreview', function () {
-    gulp.src('./markup/editor/less/preview.less')
-        .pipe(less())
-        .pipe(minify())
-        .pipe(rename({suffix: ".min"}))
-        .pipe(gulp.dest('./markup/editor/css/'))
-        .pipe(connect.reload());
-});
-
-gulp.task('lessIframe', function () {
-    gulp.src('./markup/editor/less/iframe-style.less')
-        .pipe(less())
-        .pipe(minify())
-        .pipe(rename({suffix: ".min"}))
-        .pipe(gulp.dest('./markup/editor/css/'))
-        .pipe(connect.reload());
-});
-
-gulp.task('url', function(){
-    var options = {
-        url: 'http://localhost:8000/Editor/markup/',
-        app: 'chrome'
-    };
-    gulp.src('./markup/index.html')
-        .pipe(open('', options));
-});
-
-gulp.task('watch', function () {
-    gulp.watch('./markup/index.html', ['html']);
-    gulp.watch('./markup/editor/js/uncompressed/libs/uncompressed/*.js', ['libJs']);
-    gulp.watch('./markup/editor/js/uncompressed/editor-main.js', ['editorJs']);
-    gulp.watch('./markup/editor/less/iframe-style.less', ['lessIframe']);
-    gulp.watch('./markup/editor/less/preview.less', ['lessPreview']);
-});
-
-gulp.task('default', ['lessPreview','lessIframe', 'libJs', 'editorJs', 'url', 'watch', 'connect']);
+gulp.task('default', ['scssIframe', 'scssPreview', 'libJs', 'editorJs', 'html', 'url', 'connect', 'watch']);

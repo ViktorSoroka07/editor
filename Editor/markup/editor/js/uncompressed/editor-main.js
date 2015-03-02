@@ -1,6 +1,13 @@
 (function ($) {
     'use strict';
-    $.editorCustomdef = new jQuery.Deferred();
+    /**
+     * deffered which resolved when iframe window will load
+     * @type {Deferred}
+     */
+    $.editorCustomdef = new $.Deferred();
+    /**
+     * editor plugin for text editing opreations
+     */
     $.fn.editorCustom = function (options) {
         var instance;
         return function () {
@@ -192,9 +199,36 @@
                 $(frame_content).find('.preview').on('click', function () {
                     createFrames();
                 });
+
+                /**
+                 * it create text node with text stuff which fill as first argument
+                 * @param text {string} - some text
+                 * @returns {*} textNode
+                 */
+                $.editorCustomdef.insertTextToEditor = function (text) {
+                    var textNode = document.createTextNode(text);
+                    editor_wrap.get(0).insertBefore(textNode, null);
+                    return textNode;
+                };
+
+                /**
+                 * it create selection acording to textNode which fill as 1st argument in iframe
+                 * @param textNode - some text node
+                 */
+                $.editorCustomdef.createIframeSelection = function (textNode) {
+                    var sel,
+                        range;
+                    sel = rangy.getIframeSelection(frame.get(0));
+                    sel.removeAllRanges();
+                    range = rangy.createIframeRange(frame.get(0));
+                    range.selectNode(textNode);
+                    sel.setSingleRange(range);
+                };
+
                 $.editorCustomdef.resolve();
                 return instance;
             }, 100);
+
         };
     }();
 }(jQuery));

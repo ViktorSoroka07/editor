@@ -33,28 +33,19 @@
     QUnit.test("api", function (assert) {
         assert.propEqual(wrap[0].childElementCount, 1, 'Wrapper for editor must have one child element after initialise.');
         $.when($.editorCustomdef).then(function () {
-            var edit = $(frame_content).find('body').find('#edit'),
-                txt = document.createTextNode('Some text'),
-                sel,
-                range;
-
-            edit.get(0).insertBefore(txt, null);
-
+            var edit = $(frame_content).find('body').find('#edit');
             /*
              block for create some selection in editor
              */
-            sel = rangy.getIframeSelection(frame.get(0));
-            sel.removeAllRanges();
-            range = rangy.createIframeRange(frame.get(0));
-            range.selectNode(txt);
-            sel.setSingleRange(range);
+            var textNode = $.editorCustomdef.insertTextToEditor('Some text');
+            $.editorCustomdef.createIframeSelection(textNode);
 
             /*
              check the style of selected text - bold, italic, underline, deleted
              */
             $.each(inputs, function (index, value) {
                 $(value).trigger('mousedown');
-                assert.equal($(edit).html(), '<' + value.value + ' class=\"' + 'custom-' + value.value +'\">' + $(edit).text() +
+                assert.equal($(edit).html(), '<' + value.value + ' class=\"' + 'custom-' + value.value + '\">' + $(edit).text() +
                     '</' + value.value + '>', 'Selected text must be bold.');
                 $(value).trigger('mousedown');
                 assert.equal($(edit).html(), 'Some text', 'Selected text must be just text without any style after double click.');

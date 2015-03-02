@@ -1,0 +1,127 @@
+/*dependencies*/
+@import "compass/reset";
+@import "compass/css3";
+
+/*mixxins*/
+@mixin tab-size($size: 4) {
+  -moz-tab-size:#{$size};
+  -o-tab-size:#{$size};
+  -webkit-tab-size:#{$size};
+  tab-size:#{$size};
+}
+
+/*default parameters*/
+$btn-edit-start: rgba(109, 86, 255, 0.41);
+$btn-edit-end: rgba(196, 161, 255, 0.26);
+
+$btn-preview-shadow-start: #0231af;
+$btn-preview-shadow-end: #000;
+
+$border-edit-block: rgba(0, 0, 0, 0.4);
+$edit-bcolor: #43ff36;
+
+$default-transition-function : ease-in-out;
+$default-size: 5px;
+
+/* fonts*/
+@include font-face ('PTSans-Narrow',
+        font-files('/markup/editot/fonts/PTSans-Narrow_latin+latin-ext_gdi.woff',
+                '/markup/editot/fonts/PTSans-Narrow_latin+latin-ext_gdi.otf',
+                '/markup/editot/fonts/PTSans-Narrow_latin+latin-ext_gdi.ttf',
+                '/markup/editot/fonts/PTSans-Narrow_latin+latin-ext_gdi.svg'),
+        '/markup/editot/fonts/PTSans-Narrow_latin+latin-ext_gdi.eot',
+        bold,
+        normal
+);
+
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  @include tab-size();
+}
+
+
+#edit {
+  display: block;
+  width: 100%;
+  min-height: 83%;
+  font-family: 'PTSans-Narrow', Arial, sans-serif;
+  padding: $default-size*2 $default-size;
+  margin-bottom: $default-size*2;
+  background: $edit-bcolor;
+  border: 2px solid $border-edit-block;
+  @include box-sizing();
+  @include border-radius();
+  white-space: normal;
+}
+
+b {
+  font-weight: bold;
+  &.custom-u {
+    text-decoration: underline;
+    font-weight: normal;
+  }
+}
+
+del { text-decoration: line-through; }
+
+i { font-style: italic; }
+
+input[type=button] {
+  display: inline-block;
+  min-width: $default-size;
+  height: 5%;
+  margin: 0 0 1% $default-size;
+  outline: none;
+  border: none;
+  color: #fff;
+  @include border-radius();
+  @include background-image(linear-gradient($btn-edit-start, $btn-edit-end));
+
+  &:hover{
+    color: rgba(255, 212, 118, 0.97);
+    @include single-transition(color, 500ms);
+  }
+
+  &:active{
+    text-indent: -2px;
+    @include translate(-1px, -1px);
+    @include text-shadow(lighten($btn-preview-shadow-start, 20) 1px 1px 1px);
+  }
+}
+#anchor-wrap{
+  display: inline-block;
+  div{
+    margin-right: $default-size;
+    display: inline-block;
+  }
+}
+
+.preview {
+  display: block;
+  position: relative;
+  width: 124px;
+  height: 37px;
+  font-size: 22px;
+  text-align: center;
+  line-height: 37px;
+  color: white;
+  background-color: lighten($btn-preview-shadow-start, 20);
+  text-decoration: none;
+  outline: none;
+  border: none;
+  @include border-radius(1px);
+  @include text-shadow(0 -1px -1px $btn-preview-shadow-start);
+  @include box-shadow(0 4px 0 $btn-preview-shadow-start, 0 3px 3px 1px $btn-preview-shadow-end);
+  @include single-transition(all, 0.15s);
+
+  &:hover {
+    background-color: lighten($btn-preview-shadow-start, 20);
+    @include text-shadow(0 -1px -1px $btn-preview-shadow-start);
+    @include box-shadow(0 4px 0 $btn-preview-shadow-start, 0 3px 3px 1px $btn-preview-shadow-end);
+  }
+  &:active {
+    padding-top: -1px;
+    @include box-shadow(none);
+  }
+}
